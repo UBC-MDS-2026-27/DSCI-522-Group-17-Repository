@@ -1,0 +1,113 @@
+---
+title: "Predicting Vehicle Selling Prices"
+format: html
+jupyter: python3
+execute:
+  echo: true
+---
+## Data preparation
+
+```{python}
+from pathlib import Path
+import pandas as pd
+
+project_root = Path.cwd()
+
+if not (project_root / "pyproject.toml").exists():
+    project_root = project_root.parent
+
+raw_dir = project_root / "data" / "raw"
+processed_dir = project_root / "data" / "processed"
+```
+### Download the original data
+
+```{python}
+import kagglehub
+
+raw_dir.mkdir(parents=True, exist_ok=True)
+processed_dir.mkdir(parents=True, exist_ok=True)
+
+download_path = kagglehub.dataset_download(
+    "syedanwarafridi/vehicle-sales-data",
+    path="car_prices.csv",
+    output_dir=str(raw_dir)
+)
+
+print("Downloaded file:", download_path)
+```
+### Load the data
+
+```{python}
+raw_file = raw_dir / "car_prices.csv"
+cars = pd.read_csv(raw_file, low_memory=False)
+
+print("Rows and columns:", cars.shape)
+print("Column names:", cars.columns.tolist())
+```
+### Select a reproducible sample
+
+```{python}
+cars_sample = cars.sample(n=5000, random_state=522).copy()
+
+print("Sample rows and columns:", cars_sample.shape)
+```
+### Separate training and test data
+
+```{python}
+from sklearn.model_selection import train_test_split
+
+train_df, test_df = train_test_split(
+    cars_sample,
+    test_size=0.20,
+    random_state=522
+)
+
+print("Training rows:", len(train_df))
+print("Test rows:", len(test_df))
+```
+### Check for vehicles shared between sets
+
+```{python}
+train_vins = set(train_df["vin"].dropna())
+test_vins = set(test_df["vin"].dropna())
+
+shared_vins = train_vins.intersection(test_vins)
+
+print("Vehicles appearing in both sets:", len(shared_vins))
+```
+### Inspect missen data in the training columns
+
+```{python}
+model_columns = ["year", "odometer", "sellingprice"]
+
+print("Training column types:")
+print(train_df[model_columns].dtypes)
+
+print("\nMissing training values:")
+print(train_df[model_columns].isna().sum())
+```
+### Summarise the training values
+
+```{python}
+train_df[model_columns].describe()
+```
+### Define predictors and target
+
+```{python}
+features = ["year", "odometer"]
+target = "sellingprice"
+
+X_train = train_df[features].copy()
+y_train = train_df[target].copy()
+
+print("Training predictor shape:", X_train.shape)
+print("Training target shape:", y_train.shape)
+```
+### Save the prepared data splits
+
+```{python}
+train_df.to_csv(processed_dir / "train.csv", index=False)
+test_df.to_csv(processed_dir / "test.csv", index=False)
+
+print("Training and test splits saved in data/processed.")
+```
