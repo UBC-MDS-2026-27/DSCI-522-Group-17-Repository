@@ -5,6 +5,12 @@ jupyter: python3
 execute:
   echo: true
 ---
+## Introduction
+
+This analysis investigates how well vehicle year and odometer readings predict selling prices using the Vehicle Sales Data dataset obtained from Kaggle. A reproducible sample of 5,000 records was divided into 80% training data and 20% test data. Linear regression was compared with a median-price baseline using five-fold cross-validation on the training set, followed by evaluation on the held-out test set.
+
+Data source: [Vehicle Sales Data](https://www.kaggle.com/datasets/syedanwarafridi/vehicle-sales-data).
+
 ## Data preparation
 
 ```{python}
@@ -75,7 +81,7 @@ shared_vins = train_vins.intersection(test_vins)
 
 print("Vehicles appearing in both sets:", len(shared_vins))
 ```
-### Inspect missen data in the training columns
+### Inspect missing data in the training columns
 
 ```{python}
 model_columns = ["year", "odometer", "sellingprice"]
@@ -99,6 +105,7 @@ target = "sellingprice"
 
 X_train = train_df[features].copy()
 y_train = train_df[target].copy()
+assert y_train.notna().all(), "Training selling prices contain missing values."
 
 print("Training predictor shape:", X_train.shape)
 print("Training target shape:", y_train.shape)
@@ -111,3 +118,169 @@ test_df.to_csv(processed_dir / "test.csv", index=False)
 
 print("Training and test splits saved in data/processed.")
 ```
+## Set up the regression model
+
+```{python}
+from sklearn.impute import SimpleImputer
+from sklearn.linear_model import LinearRegression
+from sklearn.pipeline import make_pipeline
+
+linear_model = make_pipeline(
+    SimpleImputer(strategy="median"),
+    LinearRegression()
+)
+```
+```{python}
+# Fit the imputer and regression model using the training data
+linear_model.fit(X_train, y_train)
+```
+### Evaluate the model using cross-validation
+
+```{python}
+from sklearn.model_selection import cross_validate
+
+cv_results = cross_validate(
+    linear_model,
+    X_train,
+    y_train,
+    cv=5,
+    scoring={
+        "mae": "neg_mean_absolute_error",
+        "r2": "r2"
+    }
+)
+
+cv_summary = pd.DataFrame({
+    "MAE": -cv_results["test_mae"],
+    "R_squared": cv_results["test_r2"]
+})
+
+cv_summary.index = range(1, 6)
+cv_summary.index.name = "Fold"
+
+cv_summary
+```
+### Summarise cross-validation performance
+
+```{python}
+cv_summary_stats = cv_summary.agg(["mean", "std"]).round(2)
+cv_summary_stats
+```
+
+### Interpretation
+
+Using vehicle year and odometer readings, the linear regression model achieved a mean cross-validation MAE of approximately 5,230 and a mean R² of 0.415. These results indicate that the model captures some variation in selling prices, but substantial prediction error remains. Performance was relatively consistent across the five folds.
+
+### Compare with a baseline model
+
+```{python}
+from sklearn.dummy import DummyRegressor
+
+baseline_model = DummyRegressor(strategy="median")
+
+baseline_cv_results = cross_validate(
+    baseline_model,
+    X_train,
+    y_train,
+    cv=5,
+    scoring={
+        "mae": "neg_mean_absolute_error",
+        "r2": "r2"
+    }
+)
+
+model_comparison = pd.DataFrame({
+    "Model": ["Median baseline", "Linear regression"],
+    "Mean CV MAE": [
+        -baseline_cv_results["test_mae"].mean(),
+        cv_summary["MAE"].mean()
+    ],
+    "Mean CV R_squared": [
+        baseline_cv_results["test_r2"].mean(),
+        cv_summary["R_squared"].mean()
+    ]
+}).set_index("Model")
+
+model_comparison.round(2)
+```
+The linear regression model outperformed the median baseline, reducing mean cross-validation MAE from 7,092.95 to 5,229.50, an improvement of approximately 26.3%. This suggests that vehicle year and odometer readings provide useful information for predicting selling prices, although substantial prediction error remains.
+
+### Evaluate on the held-out test set
+
+```{python}
+from sklearn.metrics import mean_absolute_error, r2_score
+
+# Identify test rows with known selling prices
+test_has_price = test_df[target].notna()
+
+print("Test rows excluded because selling price is missing:",
+      (~test_has_price).sum())
+print("Test rows used for evaluation:", test_has_price.sum())
+
+# Select matching predictors and known prices
+X_test = test_df.loc[test_has_price, features].copy()
+y_test = test_df.loc[test_has_price, target].copy()
+
+# Fit using all training rows
+linear_model.fit(X_train, y_train)
+
+# Predict and evaluate
+test_predictions = linear_model.predict(X_test)
+
+test_results = pd.DataFrame({
+    "MAE": [mean_absolute_error(y_test, test_predictions)],
+    "R_squared": [r2_score(y_test, test_predictions)]
+}, index=["Linear regression"])
+
+test_results.round(2)
+```
+Test observations with missing selling prices were excluded from evaluation because their prediction errors could not be calculated. Missing predictor values were replaced using medians learned from the training data.
+
+### Test results interpretation
+
+The linear regression model achieved a held-out test MAE of 5,319.82 and an R² of approximately 0.40. These results were close to the cross-validation estimates, suggesting consistent predictive performance on held-out observations. Although vehicle year and odometer readings provide useful predictive information, substantial error remains. Evaluation was restricted to vehicles with recorded selling prices.
+
+### Compare predicted and actual selling prices
+
+```{python}
+import matplotlib.pyplot as plt
+
+fig, ax = plt.subplots(figsize=(7, 5))
+
+ax.scatter(
+    y_test,
+    test_predictions,
+    alpha=0.4,
+    s=20
+)
+
+lower = min(y_test.min(), test_predictions.min())
+upper = max(y_test.max(), test_predictions.max())
+
+ax.plot(
+    [lower, upper],
+    [lower, upper],
+    color="red",
+    linestyle="--",
+    label="Perfect predictions"
+)
+
+ax.set_xlabel("Actual selling price")
+ax.set_ylabel("Predicted selling price")
+ax.set_title("Predicted versus actual vehicle selling prices")
+ax.legend()
+
+plt.tight_layout()
+plt.show()
+```
+### Prediction plot interpretation
+
+The model tends to overestimate some lower-priced vehicles and underestimate higher-priced vehicles. Predictions occupy a narrower range than actual selling prices, with particularly large errors for expensive vehicles. Some predictions are negative, which is unrealistic for selling prices. These patterns suggest that a linear model using only year and odometer readings does not adequately capture the full variation in vehicle prices.
+
+## Limitations
+
+This analysis used a reproducible sample of 5,000 records and only two predictors: vehicle year and odometer readings. Other available characteristics, such as make, model, and condition, may provide additional predictive information. The linear model also assumes additive linear relationships and can produce unrealistic negative prices. Test evaluation excluded observations with missing selling prices, so the reported performance applies to vehicles with recorded prices.
+
+## Conclusion
+
+Vehicle year and odometer readings provided useful information for predicting selling prices. Linear regression reduced cross-validation MAE by approximately 26.3% compared with a median baseline. On the held-out test set, the model achieved an MAE of 5,319.82 and an R² of approximately 0.40. However, substantial errors remained, particularly for higher-priced vehicles, limiting its usefulness for precise individual valuations.
