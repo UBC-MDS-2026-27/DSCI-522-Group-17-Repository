@@ -33,13 +33,17 @@ import kagglehub
 raw_dir.mkdir(parents=True, exist_ok=True)
 processed_dir.mkdir(parents=True, exist_ok=True)
 
-download_path = kagglehub.dataset_download(
-    "syedanwarafridi/vehicle-sales-data",
-    path="car_prices.csv",
-    output_dir=str(raw_dir)
-)
+raw_file = raw_dir / "car_prices.csv"
 
-print("Downloaded file:", download_path)
+if not raw_file.exists():
+    download_path = kagglehub.dataset_download(
+        "syedanwarafridi/vehicle-sales-data",
+        path="car_prices.csv",
+        output_dir=str(raw_dir)
+    )
+    print("Downloaded file:", download_path)
+else:
+    print("Using existing file:", raw_file)
 ```
 ### Load the data
 
