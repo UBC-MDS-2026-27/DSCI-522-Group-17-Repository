@@ -101,6 +101,56 @@ print(train_df[model_columns].isna().sum())
 ```{python}
 train_df[model_columns].describe()
 ```
+### Explore the training data
+
+The figures below use the training data only. The test set was not used for any exploration.
+
+```{python}
+#| fig-cap: "Figure 1. Distribution of selling prices in the training data (n = 4,000). The distribution is right-skewed, with a median of 12,200 USD and 75% of cars selling for 18,400 USD or less. A few cars sold for much more, up to 121,000 USD."
+import matplotlib.pyplot as plt
+
+fig, ax = plt.subplots(figsize=(7, 4))
+ax.hist(train_df["sellingprice"], bins=50)
+ax.set_xlabel("Selling price (USD)")
+ax.set_ylabel("Number of cars")
+ax.set_title("Distribution of selling prices")
+plt.tight_layout()
+plt.show()
+```
+
+```{python}
+#| fig-cap: "Figure 2. Selling price against odometer reading for 3,998 training cars. Each point is one car, and the two cars with a missing odometer reading are not shown. Points are semi-transparent so that dense areas are visible. Price drops quickly over the first 100,000 miles and then levels off, so the relationship is curved rather than linear."
+odometer_df = train_df.dropna(subset=["odometer"])
+print("Rows left out of this plot because odometer is missing:",
+      len(train_df) - len(odometer_df))
+
+fig, ax = plt.subplots(figsize=(7, 4))
+ax.scatter(odometer_df["odometer"], odometer_df["sellingprice"], alpha=0.2, s=8)
+ax.set_xlabel("Odometer reading (miles)")
+ax.set_ylabel("Selling price (USD)")
+ax.set_title("Selling price vs. odometer reading")
+plt.tight_layout()
+plt.show()
+```
+
+```{python}
+#| fig-cap: "Figure 3. Selling price by model year in the training data (n = 4,000). Each box covers the middle 50% of prices for that year, the orange line is the median, and the dots are outliers. Median price generally rises with model year, from under 1,500 USD for every year from 1991 to 2000 to about 21,500 USD for 2015, and prices vary much more for newer cars. Years before 2000 have very few cars (77 in total), and 2015 has only 63, so those boxes rest on little data."
+years = sorted(train_df["year"].unique())
+prices_by_year = [train_df.loc[train_df["year"] == y, "sellingprice"] for y in years]
+
+fig, ax = plt.subplots(figsize=(10, 4.5))
+ax.boxplot(prices_by_year, tick_labels=years, flierprops=dict(markersize=2, alpha=0.3))
+ax.tick_params(axis="x", rotation=90)
+ax.set_xlabel("Model year")
+ax.set_ylabel("Selling price (USD)")
+ax.set_title("Selling price by model year")
+plt.tight_layout()
+plt.show()
+```
+
+Selling prices are right-skewed (Figure 1). Price falls quickly as the odometer reading rises and then levels off, so the relationship is curved (Figure 2). Median price generally rises with model year and varies much more for newer cars (Figure 3). Fifteen training cars have an odometer reading below 100 miles, which looks unusual for used cars. The curved pattern suggests that a straight-line model will not fit these data perfectly.
+
+
 ### Define predictors and target
 
 ```{python}
