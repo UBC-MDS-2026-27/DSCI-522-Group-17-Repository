@@ -7,7 +7,7 @@ execute:
 ---
 ## Summary
 
-
+We investigated whether manufacturing year and odometer reading could be used to build a regression model to predict the sale price of used vehicles sold at auction. Using a sample of 5,000 vehicle sales records, we developed a linear regression model and evaluated its predictive performance using mean absolute error (MAE) and the coefficient of determination (R²). The model achieved a test MAE of $5,319.82 USD and a test R² of approximately 0.4, while reducing cross-validation MAE by 26.3% compared to a median price baseline. These findings suggest that manufacturing year and odometer readings provide useful information about auction prices, although they do not explain all th evariation in vehicle selling prices. Future work could investigate additional predictors to improve accuracy. 
 
 ## Introduction
 
