@@ -107,6 +107,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
+<p>Jerry John Doviavu, Vaibhav Sharma, Ceilidh Torrance</p>
 <section id="summary" class="level2">
 <h2 class="anchored" data-anchor-id="summary">Summary</h2>
 <p>We investigated whether manufacturing year and odometer reading could be used to build a regression model to predict the sale price of used vehicles sold at auction. Using a sample of 5,000 vehicle sales records, we developed a linear regression model and evaluated its predictive performance using mean absolute error (MAE) and the coefficient of determination (R²). The model achieved a test MAE of $5,319.82 USD and a test R² of approximately 0.4, while reducing cross-validation MAE by 26.3% compared to a median price baseline. These findings suggest that manufacturing year and odometer readings provide useful information about auction prices, although they do not explain all th evariation in vehicle selling prices. Future work could investigate additional predictors to improve accuracy.</p>
@@ -123,7 +124,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 class="anchored" data-anchor-id="data">Data</h3>
 <p>The dataset used for this project is the <em>Vehicle Sales Data</em> created by Syed Anwar (Anwar, n.d.) and sourced from Kaggle. Each row in the dataset represents a used car that was sold and describes the car by fifteen features: manufacturing year, make, model, trim, body, transmission, vehicle identification number (VIN), state, condition, odometer reading, exterior color, interior color, seller, Manheim Market Report, and sales date. An additional target column representing the sale price of the car is also included.</p>
 <p>The data is downloaded and loaded with the code below.</p>
-<div id="cb7b493d" class="cell" data-execution_count="1">
+<div id="4ecc7d43" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -137,7 +138,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <section id="download-the-original-data" class="level4">
 <h4 class="anchored" data-anchor-id="download-the-original-data">Download the original data</h4>
-<div id="9ff7b261" class="cell" data-execution_count="2">
+<div id="4a8e028b" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> kagglehub</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>raw_dir.mkdir(parents<span class="op">=</span><span class="va">True</span>, exist_ok<span class="op">=</span><span class="va">True</span>)</span>
@@ -167,7 +168,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Initial modeling was also simplified by selecting just two of the features to represent the examples: manufacturing year and odometer. These two numeric features were selected as they capture the age and wear of the car and can both plausibly relate to resale price. Both features are being treated as numeric as the magnitute of their values are related to sales price as older cars or cars with higher milage tend to have lower sales prices. We did not establish that these are the best predictors or that additional predictors could not have made a more accurate or robust model. Make, model, condition, and other features may provide additional information useful for predicting sales price and could be explored further in a future study.</p>
 <section id="load-the-data" class="level4">
 <h4 class="anchored" data-anchor-id="load-the-data">Load the data</h4>
-<div id="560c68aa" class="cell" data-execution_count="3">
+<div id="c1504f5e" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>raw_file <span class="op">=</span> raw_dir <span class="op">/</span> <span class="st">"car_prices.csv"</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>cars <span class="op">=</span> pd.read_csv(raw_file, low_memory<span class="op">=</span><span class="va">False</span>)</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -181,7 +182,7 @@ Column names: ['year', 'make', 'model', 'trim', 'body', 'transmission', 'vin', '
 </section>
 <section id="select-a-reproducible-sample" class="level4">
 <h4 class="anchored" data-anchor-id="select-a-reproducible-sample">Select a reproducible sample</h4>
-<div id="b517a959" class="cell" data-execution_count="4">
+<div id="74801a8e" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>cars_sample <span class="op">=</span> cars.sample(n<span class="op">=</span><span class="dv">5000</span>, random_state<span class="op">=</span><span class="dv">522</span>).copy()</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Sample rows and columns:"</span>, cars_sample.shape)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -196,7 +197,7 @@ Column names: ['year', 'make', 'model', 'trim', 'body', 'transmission', 'vin', '
 <p>As seen below, exploratory data analysis was performed to evaluate the available features, explore relationships, and find pre-processing requirements. As the original dataset does include some duplicate VINs, a check was done to ensure that there are no vehicles that appear in both the training and testing set. Upon inspection, it was noted that there were some null values in the features targeted for modeling, specifically, two null odometer readings in the test set. These null values were filled using median imputation as part of preprocssing. As seen in the exploratory data analysis below, the odometer readings are right skewed so median imputation handles this when filling the values without adding additional complications.</p>
 <section id="separate-training-and-test-data" class="level4">
 <h4 class="anchored" data-anchor-id="separate-training-and-test-data">Separate training and test data</h4>
-<div id="be920c4f" class="cell" data-execution_count="5">
+<div id="36f35b91" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>train_df, test_df <span class="op">=</span> train_test_split(</span>
@@ -215,7 +216,7 @@ Test rows: 1000</code></pre>
 </section>
 <section id="check-for-vehicles-shared-between-sets" class="level4">
 <h4 class="anchored" data-anchor-id="check-for-vehicles-shared-between-sets">Check for vehicles shared between sets</h4>
-<div id="f4aabe64" class="cell" data-execution_count="6">
+<div id="5972ff70" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>train_vins <span class="op">=</span> <span class="bu">set</span>(train_df[<span class="st">"vin"</span>].dropna())</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>test_vins <span class="op">=</span> <span class="bu">set</span>(test_df[<span class="st">"vin"</span>].dropna())</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -229,7 +230,7 @@ Test rows: 1000</code></pre>
 </section>
 <section id="inspect-missing-data-in-the-training-columns" class="level4">
 <h4 class="anchored" data-anchor-id="inspect-missing-data-in-the-training-columns">Inspect missing data in the training columns</h4>
-<div id="5b2e0ec5" class="cell" data-execution_count="7">
+<div id="99a3b0a9" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>model_columns <span class="op">=</span> [<span class="st">"year"</span>, <span class="st">"odometer"</span>, <span class="st">"sellingprice"</span>]</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Training column types:"</span>)</span>
@@ -254,7 +255,7 @@ dtype: int64</code></pre>
 </section>
 <section id="summarise-the-training-values" class="level4">
 <h4 class="anchored" data-anchor-id="summarise-the-training-values">Summarise the training values</h4>
-<div id="cc94a942" class="cell" data-execution_count="8">
+<div id="f9e80e9d" class="cell" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>train_df[model_columns].describe()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="8">
 <div>
@@ -328,7 +329,7 @@ dtype: int64</code></pre>
 <section id="explore-the-training-data" class="level4">
 <h4 class="anchored" data-anchor-id="explore-the-training-data">Explore the training data</h4>
 <p>The figures below use the training data only. The test set was not used for any exploration.</p>
-<div id="0ea76126" class="cell" data-execution_count="9">
+<div id="9b8b9811" class="cell" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">7</span>, <span class="dv">4</span>))</span>
@@ -347,7 +348,7 @@ dtype: int64</code></pre>
 </div>
 </div>
 </div>
-<div id="60fcf1fa" class="cell" data-execution_count="10">
+<div id="4820bcea" class="cell" data-execution_count="10">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>odometer_df <span class="op">=</span> train_df.dropna(subset<span class="op">=</span>[<span class="st">"odometer"</span>])</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Rows left out of this plot because odometer is missing:"</span>,</span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>      <span class="bu">len</span>(train_df) <span class="op">-</span> <span class="bu">len</span>(odometer_df))</span>
@@ -371,7 +372,7 @@ dtype: int64</code></pre>
 </div>
 </div>
 </div>
-<div id="67f8a365" class="cell" data-execution_count="11">
+<div id="71d00aa3" class="cell" data-execution_count="11">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>years <span class="op">=</span> <span class="bu">sorted</span>(train_df[<span class="st">"year"</span>].unique())</span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>prices_by_year <span class="op">=</span> [train_df.loc[train_df[<span class="st">"year"</span>] <span class="op">==</span> y, <span class="st">"sellingprice"</span>] <span class="cf">for</span> y <span class="kw">in</span> years]</span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -393,7 +394,7 @@ dtype: int64</code></pre>
 </div>
 </div>
 <p>Selling prices are right-skewed (Figure 1). Price falls quickly as the odometer reading rises and then levels off, so the relationship is curved (Figure 2). Median price generally rises with model year and varies much more for newer cars (Figure 3). Fifteen training cars have an odometer reading below 100 miles, which looks unusual for used cars. The curved pattern suggests that a straight-line model will not fit these data perfectly.</p>
-<div id="c7733e6a" class="cell" data-execution_count="12">
+<div id="a53a0ca9" class="cell" data-execution_count="12">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>features <span class="op">=</span> [<span class="st">"year"</span>, <span class="st">"odometer"</span>]</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>target <span class="op">=</span> <span class="st">"sellingprice"</span></span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -411,7 +412,7 @@ Training target shape: (4000,)</code></pre>
 </section>
 <section id="save-the-prepared-data-splits" class="level4">
 <h4 class="anchored" data-anchor-id="save-the-prepared-data-splits">Save the prepared data splits</h4>
-<div id="d66fcfc6" class="cell" data-execution_count="13">
+<div id="7f7bce65" class="cell" data-execution_count="13">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>train_df.to_csv(processed_dir <span class="op">/</span> <span class="st">"train.csv"</span>, index<span class="op">=</span><span class="va">False</span>)</span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>test_df.to_csv(processed_dir <span class="op">/</span> <span class="st">"test.csv"</span>, index<span class="op">=</span><span class="va">False</span>)</span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -423,7 +424,7 @@ Training target shape: (4000,)</code></pre>
 </section>
 <section id="set-up-the-regression-model" class="level4">
 <h4 class="anchored" data-anchor-id="set-up-the-regression-model">Set up the regression model</h4>
-<div id="7d92f868" class="cell" data-execution_count="14">
+<div id="61ec401c" class="cell" data-execution_count="14">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.impute <span class="im">import</span> SimpleImputer</span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LinearRegression</span>
 <span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.pipeline <span class="im">import</span> make_pipeline</span>
@@ -433,7 +434,7 @@ Training target shape: (4000,)</code></pre>
 <span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>    LinearRegression()</span>
 <span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="b78f2a6e" class="cell" data-execution_count="15">
+<div id="acc9fa47" class="cell" data-execution_count="15">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit the imputer and regression model using the training data</span></span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>linear_model.fit(X_train, y_train)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="15">
@@ -1789,7 +1790,7 @@ forceTheme('sk-container-id-1');</script>
 </section>
 <section id="evaluate-the-model-using-cross-validation" class="level4">
 <h4 class="anchored" data-anchor-id="evaluate-the-model-using-cross-validation">Evaluate the model using cross-validation</h4>
-<div id="6c516c27" class="cell" data-execution_count="16">
+<div id="171da181" class="cell" data-execution_count="16">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> cross_validate</span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>cv_results <span class="op">=</span> cross_validate(</span>
@@ -1864,7 +1865,7 @@ forceTheme('sk-container-id-1');</script>
 </section>
 <section id="summarise-cross-validation-performance" class="level4">
 <h4 class="anchored" data-anchor-id="summarise-cross-validation-performance">Summarise cross-validation performance</h4>
-<div id="03dd9c42" class="cell" data-execution_count="17">
+<div id="b660e522" class="cell" data-execution_count="17">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>cv_summary_stats <span class="op">=</span> cv_summary.agg([<span class="st">"mean"</span>, <span class="st">"std"</span>]).<span class="bu">round</span>(<span class="dv">2</span>)</span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>cv_summary_stats</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="17">
@@ -1905,7 +1906,7 @@ forceTheme('sk-container-id-1');</script>
 <p>The final model was evaluated on the held-out test set using MAE and R² evaluation metrics for direct comparison with the results of the cross-validation testing. MAE expresses average absolute prediction error in the same units as selling price which makes it easy to interpret for our purposes. R² tells us what perenage of the variation in used vehicle sale price the chosen features account for. To validate the output and understand model performance, we also compared against a median-price baseline using the same five cross validation folds. The median-price baseline was chosen as a simple benchmark to determine whether using manufacturing year and odometer reading improves predicted price.</p>
 <section id="compare-with-a-baseline-model" class="level4">
 <h4 class="anchored" data-anchor-id="compare-with-a-baseline-model">Compare with a baseline model</h4>
-<div id="8b200dcf" class="cell" data-execution_count="18">
+<div id="02585f00" class="cell" data-execution_count="18">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.dummy <span class="im">import</span> DummyRegressor</span>
 <span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>baseline_model <span class="op">=</span> DummyRegressor(strategy<span class="op">=</span><span class="st">"median"</span>)</span>
@@ -1972,7 +1973,7 @@ forceTheme('sk-container-id-1');</script>
 </section>
 <section id="evaluate-on-the-held-out-test-set" class="level4">
 <h4 class="anchored" data-anchor-id="evaluate-on-the-held-out-test-set">Evaluate on the held-out test set</h4>
-<div id="2cc6367b" class="cell" data-execution_count="19">
+<div id="df0813b8" class="cell" data-execution_count="19">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> mean_absolute_error, r2_score</span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Identify test rows with known selling prices</span></span>
@@ -2035,7 +2036,7 @@ Test rows used for evaluation: 999</code></pre>
 <p>When the linear regression model was evaluated on the held-out test set it achieved an MAE of 5,319.82 and an R² of approximately 0.40. These results were close to the cross-validation estimates, suggesting consistent predictive performance on held-out observations. Although vehicle year and odometer readings provide useful predictive information, substantial error remains. Evaluation was restricted to vehicles with recorded selling prices.</p>
 <section id="compare-predicted-and-actual-selling-prices" class="level4">
 <h4 class="anchored" data-anchor-id="compare-predicted-and-actual-selling-prices">Compare predicted and actual selling prices</h4>
-<div id="ae90f139" class="cell" data-execution_count="20">
+<div id="a7dc9301" class="cell" data-execution_count="20">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">7</span>, <span class="dv">5</span>))</span>
