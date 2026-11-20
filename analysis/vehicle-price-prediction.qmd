@@ -7,11 +7,18 @@ execute:
 ---
 ## Introduction
 
-This analysis investigates how well vehicle year and odometer readings predict selling prices using the Vehicle Sales Data dataset obtained from Kaggle. A reproducible sample of 5,000 records was divided into 80% training data and 20% test data. Linear regression was compared with a median-price baseline using five-fold cross-validation on the training set, followed by evaluation on the held-out test set.
+Used car pricing is much more variable than that of a standard product as feature variation and vehicle depreciation over time both play a role in pricing (Caglayan Akay, E., Bolukbasi, Ö. F., & Bekar, E., 2018). This is why two car models that appear similar may have significantly different prices that depend on factors such as make, mileage, and engine size. Dealerships need to be able to price cars competitively to compete in the current market, without sacrificing profits. To price a car competitively, a dealership needs a deep understanding of what features are driving prices, what options are competitive, and what consumers are willing to pay for. 
 
-Data source: [Vehicle Sales Data](https://www.kaggle.com/datasets/syedanwarafridi/vehicle-sales-data).
+Here we ask how accurately machine learning can predict the sale price of a used car using key features. By answering this question, we can support dealerships in making conscientious decisions related to pricing cars in a way that allows them to balance profits with consumer interest. Dealerships that consistently underprice their cars are at risk of losing profits that could keep them afloat, while dealerships that consistently overprice their vehicles can become uncompetitive and risk losing business. Pricing that reflects trends and remains competitive in the current market can potentially increase turnover and profitability (Huang, G., Luo, H., & Xia, J., 2019). 
 
-## Data preparation
+To answer this question we use the dataset Vehicle Sales Data (Anwar, n.d.). A 5,000 row sample from this dataset will be used for training and testing in order to reduce computational overhead during the analysis. Each example in the training and testing set represents one used car sale by odometer reading and manufacturing year. The target we want to predict is the sale price of the car measured in US dollars (USD). 
+
+## Methods
+
+### Data
+The dataset used for this project is the Vehicle Sales Data created by Syed Anwar (Anwar, n.d.) and sourced from Kaggle. Each row in the dataset represents a used car that was sold and describes the car by fifteen features: manufacturing year, make, model, trim, body, transmission, vehicle identification number (VIN), state, condition, odometer reading, exterior color, interior color, seller, Manheim Market Report, and sales date. An additional target column representing the sale price of the car is also included. 
+
+The data is downloaded and loaded with the code below. 
 
 ```{python}
 from pathlib import Path
@@ -25,8 +32,8 @@ if not (project_root / "pyproject.toml").exists():
 raw_dir = project_root / "data" / "raw"
 processed_dir = project_root / "data" / "processed"
 ```
-### Download the original data
 
+#### Download the original data
 ```{python}
 import kagglehub
 
@@ -45,8 +52,15 @@ if not raw_file.exists():
 else:
     print("Using existing file:", raw_file)
 ```
-### Load the data
 
+### Modeling Decisions
+A linear regression model was built to evaluate whether a model could be used to predict the sale price of a used car. Linear regression provides a straightforward, interpretable starting model which can be used to predict sales price as well as understand which features are adding to or detracting from the price. We chose linear regression for its interpretability, while acknowledging that vehicle characteristics may not relate linearly to selling price.
+
+In order to reduce computational overhead while analyzing the data and building a model, some additional reduction was done on the data. First, a sample of 5,000 rows was made. This was a practical choice to keep the initial milestone analysis manageable and quick to rerun during development and review. A sampling seed of 522 was set for repeatability, then an 80-20 testing and training split was made to produce 4,000 training examples and 1,000 testing examples. 
+
+Initial modeling was also simplified by selecting just two of the features to represent the examples: manufacturing year and odometer. These two numeric features were selected as they capture the age and wear of the car and can both plausibly relate to resale price. Both features are being treated as numeric as the magnitute of their values are related to sales price as older cars or cars with higher milage tend to have lower sales prices. We did not establish that these are the best predictors or that additional predictors could not have made a more accurate or robust model. Make, model, condition, and other features may provide additional information useful for predicting sales price and could be explored further in a future study. 
+
+#### Load the data
 ```{python}
 raw_file = raw_dir / "car_prices.csv"
 cars = pd.read_csv(raw_file, low_memory=False)
@@ -54,15 +68,18 @@ cars = pd.read_csv(raw_file, low_memory=False)
 print("Rows and columns:", cars.shape)
 print("Column names:", cars.columns.tolist())
 ```
-### Select a reproducible sample
 
+#### Select a reproducible sample
 ```{python}
 cars_sample = cars.sample(n=5000, random_state=522).copy()
 
 print("Sample rows and columns:", cars_sample.shape)
 ```
-### Separate training and test data
 
+### Exploratory Data Analysis
+As seen below, exploratory data analysis was performed to evaluate the available features, explore relationships, and find pre-processing requirements. As the original dataset does include some duplicate VINs, a check was done to ensure that there are no vehicles that appear in both the training and testing set. Upon inspection, it was noted that there were some null values in the features targeted for modeling, specifically, two null odometer readings in the test set. These null values were filled using median imputation as part of preprocssing. As seen in the exploratory data analysis below, the odometer readings are right skewed so median imputation handles this when filling the values without adding additional complications. 
+
+#### Separate training and test data
 ```{python}
 from sklearn.model_selection import train_test_split
 
@@ -75,8 +92,8 @@ train_df, test_df = train_test_split(
 print("Training rows:", len(train_df))
 print("Test rows:", len(test_df))
 ```
-### Check for vehicles shared between sets
 
+#### Check for vehicles shared between sets
 ```{python}
 train_vins = set(train_df["vin"].dropna())
 test_vins = set(test_df["vin"].dropna())
@@ -85,8 +102,8 @@ shared_vins = train_vins.intersection(test_vins)
 
 print("Vehicles appearing in both sets:", len(shared_vins))
 ```
-### Inspect missing data in the training columns
 
+#### Inspect missing data in the training columns
 ```{python}
 model_columns = ["year", "odometer", "sellingprice"]
 
@@ -96,15 +113,14 @@ print(train_df[model_columns].dtypes)
 print("\nMissing training values:")
 print(train_df[model_columns].isna().sum())
 ```
-### Summarise the training values
 
+#### Summarise the training values
 ```{python}
 train_df[model_columns].describe()
 ```
-### Explore the training data
 
+#### Explore the training data
 The figures below use the training data only. The test set was not used for any exploration.
-
 ```{python}
 #| fig-cap: "Figure 1. Distribution of selling prices in the training data (n = 4,000). The distribution is right-skewed, with a median of 12,200 USD and 75% of cars selling for 18,400 USD or less. A few cars sold for much more, up to 121,000 USD."
 import matplotlib.pyplot as plt
@@ -150,9 +166,6 @@ plt.show()
 
 Selling prices are right-skewed (Figure 1). Price falls quickly as the odometer reading rises and then levels off, so the relationship is curved (Figure 2). Median price generally rises with model year and varies much more for newer cars (Figure 3). Fifteen training cars have an odometer reading below 100 miles, which looks unusual for used cars. The curved pattern suggests that a straight-line model will not fit these data perfectly.
 
-
-### Define predictors and target
-
 ```{python}
 features = ["year", "odometer"]
 target = "sellingprice"
@@ -164,16 +177,16 @@ assert y_train.notna().all(), "Training selling prices contain missing values."
 print("Training predictor shape:", X_train.shape)
 print("Training target shape:", y_train.shape)
 ```
-### Save the prepared data splits
 
+#### Save the prepared data splits
 ```{python}
 train_df.to_csv(processed_dir / "train.csv", index=False)
 test_df.to_csv(processed_dir / "test.csv", index=False)
 
 print("Training and test splits saved in data/processed.")
 ```
-## Set up the regression model
 
+#### Set up the regression model
 ```{python}
 from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LinearRegression
@@ -188,8 +201,8 @@ linear_model = make_pipeline(
 # Fit the imputer and regression model using the training data
 linear_model.fit(X_train, y_train)
 ```
-### Evaluate the model using cross-validation
 
+#### Evaluate the model using cross-validation
 ```{python}
 from sklearn.model_selection import cross_validate
 
@@ -214,19 +227,19 @@ cv_summary.index.name = "Fold"
 
 cv_summary
 ```
-### Summarise cross-validation performance
 
+#### Summarise cross-validation performance
 ```{python}
 cv_summary_stats = cv_summary.agg(["mean", "std"]).round(2)
 cv_summary_stats
 ```
 
-### Interpretation
+### Analysis
+Five-fold cross-validation was used to validate the model during the build to evaluate on MAE and R² during the validation phase, prior to a final model being built. No changes were made to the model after the initial cross-validation, but if needed it would have allowed us to evaluate and tune the hyperparameters. 
 
 Using vehicle year and odometer readings, the linear regression model achieved a mean cross-validation MAE of approximately 5,230 and a mean R² of 0.415. These results indicate that the model captures some variation in selling prices, but substantial prediction error remains. Performance was relatively consistent across the five folds.
 
-### Compare with a baseline model
-
+#### Compare with a baseline model
 ```{python}
 from sklearn.dummy import DummyRegressor
 
@@ -257,10 +270,10 @@ model_comparison = pd.DataFrame({
 
 model_comparison.round(2)
 ```
+
 The linear regression model outperformed the median baseline, reducing mean cross-validation MAE from 7,092.95 to 5,229.50, an improvement of approximately 26.3%. This suggests that vehicle year and odometer readings provide useful information for predicting selling prices, although substantial prediction error remains.
 
-### Evaluate on the held-out test set
-
+#### Evaluate on the held-out test set
 ```{python}
 from sklearn.metrics import mean_absolute_error, r2_score
 
@@ -288,14 +301,14 @@ test_results = pd.DataFrame({
 
 test_results.round(2)
 ```
+
 Test observations with missing selling prices were excluded from evaluation because their prediction errors could not be calculated. Missing predictor values were replaced using medians learned from the training data.
 
-### Test results interpretation
+## Results and Discussion
 
-The linear regression model achieved a held-out test MAE of 5,319.82 and an R² of approximately 0.40. These results were close to the cross-validation estimates, suggesting consistent predictive performance on held-out observations. Although vehicle year and odometer readings provide useful predictive information, substantial error remains. Evaluation was restricted to vehicles with recorded selling prices.
+When the linear regression model was evaluated on the held-out test set it achieved an MAE of 5,319.82 and an R² of approximately 0.40. These results were close to the cross-validation estimates, suggesting consistent predictive performance on held-out observations. Although vehicle year and odometer readings provide useful predictive information, substantial error remains. Evaluation was restricted to vehicles with recorded selling prices. MAE expresses average absolute prediction error in the same units as selling price which makes it easy to interpret for our purposes. To validate the output and understand model performance, we compared against a median-price baseline using the same five cross validation folds. 
 
-### Compare predicted and actual selling prices
-
+#### Compare predicted and actual selling prices
 ```{python}
 import matplotlib.pyplot as plt
 
@@ -327,14 +340,12 @@ ax.legend()
 plt.tight_layout()
 plt.show()
 ```
-### Prediction plot interpretation
 
+### Prediction plot interpretation
 The model tends to overestimate some lower-priced vehicles and underestimate higher-priced vehicles. Predictions occupy a narrower range than actual selling prices, with particularly large errors for expensive vehicles. Some predictions are negative, which is unrealistic for selling prices. These patterns suggest that a linear model using only year and odometer readings does not adequately capture the full variation in vehicle prices.
 
-## Limitations
-
+### Limitations
 This analysis used a reproducible sample of 5,000 records and only two predictors: vehicle year and odometer readings. Other available characteristics, such as make, model, and condition, may provide additional predictive information. The linear model also assumes additive linear relationships and can produce unrealistic negative prices. Test evaluation excluded observations with missing selling prices, so the reported performance applies to vehicles with recorded prices.
 
 ## Conclusion
-
 Vehicle year and odometer readings provided useful information for predicting selling prices. Linear regression reduced cross-validation MAE by approximately 26.3% compared with a median baseline. On the held-out test set, the model achieved an MAE of 5,319.82 and an R² of approximately 0.40. However, substantial errors remained, particularly for higher-priced vehicles, limiting its usefulness for precise individual valuations.
