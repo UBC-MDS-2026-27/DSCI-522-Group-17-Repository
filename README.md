@@ -10,9 +10,9 @@ Vehicle year and odometer readings provide useful predictive information, but su
 
 ## Report
 
-The analysis is contained in [the Quarto source](analysis/vehicle-price-prediction.qmd), with [the rendered HTML](analysis/vehicle-price-prediction.html) stored alongside it.
+[Read the published analysis report](https://ubc-mds-2026-27.github.io/DSCI-522-Vehicle-Price-Predictions/analysis/vehicle-price-prediction.html).
 
-To view the report locally, follow the instructions below and open `analysis/vehicle-price-prediction.html` in a web browser. The GitHub Pages publication link will be added once publication is configured and verified.
+The [Quarto source](analysis/vehicle-price-prediction.qmd) and [rendered HTML](analysis/vehicle-price-prediction.html) are included in this repository. To reproduce the report locally, follow the instructions below.
 
 ## Data
 
@@ -35,8 +35,8 @@ The project uses Python 3.12. Python dependencies are declared in [pyproject.tom
 Run these commands in your terminal:
 
 ```bash
-git clone https://github.com/UBC-MDS-2026-27/DSCI-522-Group-17-Repository.git
-cd DSCI-522-Group-17-Repository
+git clone https://github.com/UBC-MDS-2026-27/DSCI-522-Vehicle-Price-Predictions.git
+cd DSCI-522-Vehicle-Price-Predictions
 ```
 
 Run all remaining commands from this repository folder.
