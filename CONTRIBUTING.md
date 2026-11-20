@@ -24,20 +24,18 @@ Install [uv](https://docs.astral.sh/uv/getting-started/installation/) and
 create the virtual environment from the root of the repository:
 
 ``` bash
-git clone https://github.com/UBC-MDS-2026-27/DSCI-522-Group-17-Repository.git 
+git clone https://github.com/UBC-MDS-2026-27/DSCI-522-Vehicle-Price-Predictions.git  
 cd DSCI-522-Vehicle-Price-Predictions
-uv sync
+uv sync --locked
 ```
 
-To re-run the analysis and render the report:
+To re-run the analysis and render the report from the root directory:
 
 ``` bash
-uv run quarto render
+uv run quarto render analysis/vehicle-price-prediction.qmd
 ```
 
-If your change needs a new Python package, add it with `uv add <package>`
-(this pins an exact version in `pyproject.toml` and updates `uv.lock`),
-and commit both files.
+If your change needs a new Python package, add it with uv add <package>. This records the dependency requirement in pyproject.toml and updates the resolved package versions in uv.lock. Commit both files.
 
 ### Pull request process
 
@@ -62,4 +60,4 @@ Conduct](CODE_OF_CONDUCT.md). By participating in this project you agree to
 abide by its terms.
 
 ### Attribution
-These contributing guidelines were adapted from the [DSCI_522_project-template-breast-cancer-predictor contributing guidelines](https://github.com/UBC-MDS/DSCI_522_project-template-breast-cancer-predictor/blob/0.0.1/CONTRIBUTING.md) and the [dyplr contributing guidelines](https://github.com/tidyverse/dplyr/blob/main/.github/CONTRIBUTING.md).
+These contributing guidelines were adapted from the [DSCI_522_project-template-breast-cancer-predictor contributing guidelines](https://github.com/UBC-MDS/DSCI_522_project-template-breast-cancer-predictor/blob/0.0.1/CONTRIBUTING.md) and the [dplyr contributing guidelines](https://github.com/tidyverse/dplyr/blob/main/.github/CONTRIBUTING.md).

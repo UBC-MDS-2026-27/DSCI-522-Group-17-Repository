@@ -2,18 +2,25 @@
 
 ## Analysis report
 
-Copyright (c) 2026 Jerry John Doviavu, Vaibhav Sharma, Ceilidh Torrance
-
 This report (source contained in the [`DSCI-552-Vehicle-Price-Predictions` repository](https://github.com/UBC-MDS-2026-27/DSCI-522-Vehicle-Price-Predictions)) is made available under the **Attribution-NonCommercial-ShareAlike 4.0 International** ([CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)).
 
-This is a human-readable summary of (and not a substitute for) the [license](https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode).
+Copyright (c) 2026 Jerry John Doviavu, Vaibhav Sharma, Ceilidh Torrance
 
-## You are free to:
+### You are free to:
 
-- **Share** — copy and redistribute the material in any medium or format
-- **Adapt** — remix, transform, and build upon the material
-
+__Share__ — copy and redistribute the material in any medium or format
 The licensor cannot revoke these freedoms as long as you follow the license terms.
+
+### Under the following terms:
+__Attribution__ — You must give [appropriate credit](https://creativecommons.org/licenses/by-nc-nd/4.0/#ref-appropriate-credit), provide a link to the license, and [indicate if changes were made](https://creativecommons.org/licenses/by-nc-nd/4.0/#ref-indicate-changes). You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
+__NonCommercial__ — You may not use the material for [commercial purposes](https://creativecommons.org/licenses/by-nc-nd/4.0/#ref-commercial-purposes).
+__NoDerivatives__ — If you [remix, transform, or build upon](https://creativecommons.org/licenses/by-nc-nd/4.0/#ref-some-kinds-of-mods) the material, you may not distribute the modified material.
+__No additional restrictions__ — You may not apply legal terms or [technological measures](https://creativecommons.org/licenses/by-nc-nd/4.0/#ref-technological-measures) that legally restrict others from doing anything the license permits.
+
+### Notices:
+You do not have to comply with the license for elements of the material in the public domain or where your use is permitted by an applicable [exception or limitation](https://creativecommons.org/licenses/by-nc-nd/4.0/#ref-exception-or-limitation).
+
+No warranties are given. The license may not give you all of the permissions necessary for your intended use. For example, other rights such as [publicity, privacy, or moral rights](https://creativecommons.org/licenses/by-nc-nd/4.0/#ref-publicity-privacy-or-moral-rights) may limit how you use the material.
 
 ## Under the following terms:
 
@@ -33,7 +40,7 @@ No warranties are given. The license may not give you all of the permissions nec
 
 MIT License
 
-Copyright (c) 2026 2026 Jerry John Doviavu, Vaibhav Sharma, Ceilidh Torrance
+Copyright (c) 2026 Jerry John Doviavu, Vaibhav Sharma, Ceilidh Torrance
 
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
