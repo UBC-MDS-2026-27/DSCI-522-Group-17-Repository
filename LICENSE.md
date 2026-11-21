@@ -2,7 +2,7 @@
 
 ## Analysis report
 
-This report (source contained in the [`DSCI-522-Vehicle-Price-Predictions` repository](https://github.com/UBC-MDS-2026-27/DSCI-522-Vehicle-Price-Predictions)) is made available under the **Attribution-NonCommercial-ShareAlike 4.0 International** ([CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/)).
+This report (source contained in the [`DSCI-522-Vehicle-Price-Predictions` repository](https://github.com/UBC-MDS-2026-27/DSCI-522-Vehicle-Price-Predictions)) is made available under the **Attribution-NonCommercial-NoDerivatives 4.0 International** ([CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/)).
 
 Copyright (c) 2026 Jerry John Doviavu, Vaibhav Sharma, Ceilidh Torrance
 
