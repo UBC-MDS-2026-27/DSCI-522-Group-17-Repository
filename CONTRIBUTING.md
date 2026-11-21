@@ -35,7 +35,7 @@ To re-run the analysis and render the report from the root directory:
 uv run quarto render analysis/vehicle-price-prediction.qmd
 ```
 
-If your change needs a new Python package, add it with uv add <package>. This records the dependency requirement in pyproject.toml and updates the resolved package versions in uv.lock. Commit both files.
+If your change needs a new Python package, add it with `uv add <package>`. This records the dependency requirement in `pyproject.toml` and updates the resolved package versions in `uv.lock`. Commit both files.
 
 ### Pull request process
 
@@ -44,7 +44,7 @@ If your change needs a new Python package, add it with uv add <package>. This re
 *  Give the branch a short name that describes the work,
    for example `fix-readme-typo` or `add-eda-figure`.
 *  Keep each branch small: one independent piece of work per branch.
-*  Before opening the PR, render the report (`uv run quarto render`)
+*  Before opening the PR, render the report (`uv run quarto render analysis/vehicle-price-prediction.qmd`)
    to check that the analysis still runs from start to finish.
 *  Open a PR into `main` and describe what changed and why.
    Link the related issue (e.g., "Closes #12").
