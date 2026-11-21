@@ -24,7 +24,7 @@ In order to create a welcoming and inclusive environment for all team members, w
 ## Consequences for Unacceptable Behaviour and Reporting Procedures
 Members of the project team have the right and responsibility to remove, edit, or reject comments, commits, code, issues, and other contributions that are not aligned to this Code of Conduct, or to ban any contributor for behaviours they deem inappropriate, threatening, offensive, or harmful. 
 
-The team is committed to promptly addressing any reported issues. Instances of abusive, harassing, or otherwise unacceptable behaviour may be reported by contacting any member of the team on slack (@Ceilidh Torrance, @Jerry John Doviavu, and/or @Vaibhav Sharma). In cases where issues cannot be resolved internally, they will be escalated to the course instructor. 
+The team is committed to promptly addressing any reported issues. Instances of abusive, harassing, or otherwise unacceptable behaviour may be reported by contacting any member of the team (ceilidh2@student.ubc.ca, jerryjohnjerryjohn500@gmail.com, and/or vaibhavshharma@gmail.com). All reports will be kept confidential. In cases where issues cannot be resolved internally, they will be escalated to the course instructor. 
 
 ## Sources
 This code of conduct was adapted from the tidyverse.org CODE_OF_CONDUCT.md (https://github.com/tidyverse/tidyverse.org/blob/master/CODE_OF_CONDUCT.md) as well as the pandas-dev code-of-conduct.md (https://github.com/pandas-dev/pandas-governance/blob/main/code-of-conduct.md). 
